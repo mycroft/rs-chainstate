@@ -1,0 +1,5 @@
+/target
+
+# Local data: chainstate snapshots and outputs.
+/chainstate/
+*.csv
