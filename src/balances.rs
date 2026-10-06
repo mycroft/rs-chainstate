@@ -78,7 +78,11 @@ impl Aggregator {
     }
 
     /// Calls `f` for every balance of at least `minimum`, in output order.
-    pub fn finish(self, minimum: u64, mut f: impl FnMut(&str, Balance) -> Result<()>) -> Result<()> {
+    pub fn finish(
+        self,
+        minimum: u64,
+        mut f: impl FnMut(&str, Balance) -> Result<()>,
+    ) -> Result<()> {
         match self.store {
             Store::Memory(m) => {
                 for (address, b) in sorted(m, minimum) {
@@ -96,7 +100,10 @@ fn add_to(m: &mut HashMap<Box<str>, Balance>, address: &str, add: Balance) -> Re
         Some(b) => b,
         None => m.entry(address.into()).or_default(),
     };
-    b.amount = b.amount.checked_add(add.amount).context("amount overflow")?;
+    b.amount = b
+        .amount
+        .checked_add(add.amount)
+        .context("amount overflow")?;
     b.utxos += add.utxos;
     Ok(())
 }
@@ -193,7 +200,10 @@ fn read_record(r: &mut impl Read) -> Result<Option<(String, Balance)>> {
     let amount = u64::from_le_bytes(n);
     r.read_exact(&mut n)?;
     let utxos = u64::from_le_bytes(n);
-    Ok(Some((String::from_utf8(address)?, Balance { amount, utxos })))
+    Ok(Some((
+        String::from_utf8(address)?,
+        Balance { amount, utxos },
+    )))
 }
 
 struct Head {
@@ -237,13 +247,26 @@ fn merge(runs: &[PathBuf], mut f: impl FnMut(&str, Balance) -> Result<()>) -> Re
     let mut heap = BinaryHeap::with_capacity(readers.len());
     for (run, r) in readers.iter_mut().enumerate() {
         if let Some((address, balance)) = read_record(r)? {
-            heap.push(Head { address, balance, run });
+            heap.push(Head {
+                address,
+                balance,
+                run,
+            });
         }
     }
-    while let Some(Head { address, balance, run }) = heap.pop() {
+    while let Some(Head {
+        address,
+        balance,
+        run,
+    }) = heap.pop()
+    {
         f(&address, balance)?;
         if let Some((address, balance)) = read_record(&mut readers[run])? {
-            heap.push(Head { address, balance, run });
+            heap.push(Head {
+                address,
+                balance,
+                run,
+            });
         }
     }
     Ok(())

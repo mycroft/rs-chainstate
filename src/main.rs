@@ -110,9 +110,9 @@ impl BalanceArgs {
 
     fn write(&self, agg: Aggregator) -> Result<()> {
         let out: Box<dyn Write> = match &self.output {
-            Some(p) => Box::new(
-                File::create(p).with_context(|| format!("creating {}", p.display()))?,
-            ),
+            Some(p) => {
+                Box::new(File::create(p).with_context(|| format!("creating {}", p.display()))?)
+            }
             None => Box::new(std::io::stdout().lock()),
         };
         let mut out = BufWriter::new(out);
@@ -134,7 +134,10 @@ impl DumpArgs {
         let mut cs = Chainstate::open(&self.dir, self.force)?;
         let mut errors = 0u64;
         cs.for_each_coin(|c| match c {
-            Ok(c) => f(&c, &dest::destination(&c.script, self.network, self.p2pk_as_p2pkh)),
+            Ok(c) => f(
+                &c,
+                &dest::destination(&c.script, self.network, self.p2pk_as_p2pkh),
+            ),
             Err(e) => {
                 errors += 1;
                 eprintln!("error: {e:#}");

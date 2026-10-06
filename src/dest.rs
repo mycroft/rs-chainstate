@@ -63,7 +63,10 @@ mod tests {
         // 1-of-1 bare multisig with a compressed key.
         let hex = "512102000000000000000000000000000000000000000000000000000000000000000151ae";
         let s = script(hex);
-        assert_eq!(destination(&s, Network::Bitcoin, true), format!("multisig:{hex}"));
+        assert_eq!(
+            destination(&s, Network::Bitcoin, true),
+            format!("multisig:{hex}")
+        );
     }
 
     #[test]
@@ -71,6 +74,9 @@ mod tests {
         // Early P2Pool share commitment: bare 36-byte push.
         let hex = format!("24{}", "ab".repeat(36));
         let s = script(&hex);
-        assert_eq!(destination(&s, Network::Bitcoin, true), format!("nonstandard:{hex}"));
+        assert_eq!(
+            destination(&s, Network::Bitcoin, true),
+            format!("nonstandard:{hex}")
+        );
     }
 }

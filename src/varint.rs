@@ -19,7 +19,9 @@ pub fn read_varint(buf: &mut &[u8]) -> Result<u64> {
         if b & 0x80 == 0 {
             return Ok(n);
         }
-        n = n.checked_add(1).ok_or_else(|| anyhow::anyhow!("varint overflow"))?;
+        n = n
+            .checked_add(1)
+            .ok_or_else(|| anyhow::anyhow!("varint overflow"))?;
     }
 }
 
