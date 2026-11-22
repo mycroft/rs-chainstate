@@ -62,9 +62,14 @@ mod tests {
     fn varint_vectors() {
         // From Bitcoin Core serialize.h comments.
         assert_eq!(varint(&[0x00]), 0);
+        assert_eq!(varint(&[0x01]), 1);
         assert_eq!(varint(&[0x7f]), 127);
         assert_eq!(varint(&[0x80, 0x00]), 128);
         assert_eq!(varint(&[0x80, 0x7f]), 255);
+        assert_eq!(varint(&[0x81, 0x00]), 256);
+        assert_eq!(varint(&[0xfe, 0x7f]), 16383);
+        assert_eq!(varint(&[0xff, 0x00]), 16384);
+        assert_eq!(varint(&[0xff, 0x7f]), 16511);
         assert_eq!(varint(&[0x82, 0xfe, 0x7f]), 65535);
         assert_eq!(varint(&[0x8e, 0xfe, 0xfe, 0xff, 0x00]), 4294967296);
     }
